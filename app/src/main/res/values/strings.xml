@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">livewallpaper</string>
+    <string name="wallpaper_label">Your Wallpaper Name</string>
+    <string name="wallpaper_description">Your wallpaper description</string>
+</resources>
