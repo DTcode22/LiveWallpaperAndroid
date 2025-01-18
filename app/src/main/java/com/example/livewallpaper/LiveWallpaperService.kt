@@ -27,9 +27,9 @@ class LiveWallpaperService : WallpaperService() {
         private val handler = Handler(Looper.getMainLooper())
         private var visible = false
         private val paint = Paint().apply {
-            color = Color.WHITE
-            alpha = 120
-            strokeWidth = 3f
+            color = Color.rgb(200, 200, 255)
+            alpha = 60
+            strokeWidth = 2f
             style = Paint.Style.STROKE
             isAntiAlias = true
         }
@@ -52,7 +52,7 @@ class LiveWallpaperService : WallpaperService() {
             try {
                 canvas = holder.lockCanvas()
                 if (canvas != null) {
-                    canvas.drawColor(Color.rgb(0, 0, 15))
+                    canvas.drawColor(Color.rgb(5, 5, 25))
 
                     time += Math.PI.toFloat() / 90f
 
@@ -108,8 +108,8 @@ class LiveWallpaperService : WallpaperService() {
 
             // Adjusted paint for second pattern
             paint.apply {
-                alpha = 180  // Much higher alpha for better visibility
-                strokeWidth = 3.5f  // Thicker points
+                alpha = 100  // Much higher alpha for better visibility
+                strokeWidth = 2f  // Thicker points
                 color = Color.rgb(255, 255, 255)  // Pure white
             }
 
