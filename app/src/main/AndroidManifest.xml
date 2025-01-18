@@ -15,10 +15,9 @@
 
         <!-- Main activity declaration -->
         <activity
-            android:name=".LiveWallpaperService"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:exported="true"> <!-- Explicitly specify android:exported -->
+            android:name=".WallpaperSettingsActivity"
+            android:exported="true"
+            android:label="@string/wallpaper_settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

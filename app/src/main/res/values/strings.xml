@@ -2,4 +2,11 @@
     <string name="app_name">livewallpaper</string>
     <string name="wallpaper_label">Your Wallpaper Name</string>
     <string name="wallpaper_description">Your wallpaper description</string>
+    <string name="select_pattern">Select Pattern</string>
+    <string name="pattern_1">Classic Wave Pattern</string>
+    <string name="pattern_2">Spiral Wave Pattern</string>
+    <string name="pattern_3">Wave Flow Pattern</string>
+    <string name="pattern_4">Classic Ripple Pattern</string>
+    <string name="pattern_5">Dynamic Flow Pattern</string>
+    <string name="wallpaper_settings">Wallpaper Settings</string>
 </resources>
