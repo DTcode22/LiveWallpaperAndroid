@@ -1,4 +1,3 @@
-// LiveWallpaperService.kt
 package com.example.livewallpaper
 
 import android.graphics.Canvas
@@ -12,6 +11,7 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlin.math.PI
 
 class LiveWallpaperService : WallpaperService() {
     private lateinit var wallpaperManager: WallpaperManager
@@ -27,9 +27,9 @@ class LiveWallpaperService : WallpaperService() {
         private val handler = Handler(Looper.getMainLooper())
         private var visible = false
         private val paint = Paint().apply {
-            color = Color.rgb(200, 200, 255)
-            alpha = 60
-            strokeWidth = 2f
+            color = Color.rgb(180, 180, 180)
+            alpha = 25
+            strokeWidth = 3f
             style = Paint.Style.STROKE
             isAntiAlias = true
         }
@@ -52,16 +52,15 @@ class LiveWallpaperService : WallpaperService() {
             try {
                 canvas = holder.lockCanvas()
                 if (canvas != null) {
-                    canvas.drawColor(Color.rgb(5, 5, 25))
-
-                    time += Math.PI.toFloat() / 90f
+                    canvas.drawColor(Color.BLACK)
+                    time += PI.toFloat() / 90f
 
                     when (wallpaperManager.getCurrentPattern()) {
-                        0 -> drawPattern1(canvas)
-                        1 -> drawPattern2(canvas)
-                        2 -> drawPattern3(canvas)
-                        3 -> drawPattern4(canvas)
-                        4 -> drawPattern5(canvas)
+                        0 -> drawSmokeVortex(canvas)
+                        1 -> drawNebula(canvas)
+                        2 -> drawAuroraWaves(canvas)
+                        3 -> drawCosmicFlow(canvas)
+                        4 -> drawEtherealMist(canvas)
                     }
                 }
             } finally {
@@ -71,165 +70,142 @@ class LiveWallpaperService : WallpaperService() {
             }
         }
 
-        private fun drawPattern1(canvas: Canvas) {
+        private fun drawSmokeVortex(canvas: Canvas) {
             val width = canvas.width.toFloat()
             val height = canvas.height.toFloat()
+            val centerX = width / 2
+            val centerY = height / 2
 
-            // Adjusted paint for first pattern
             paint.apply {
-                alpha = 100
-                strokeWidth = 2.5f
-                color = Color.WHITE
+                alpha = 15
+                strokeWidth = 3f
+                color = Color.rgb(180, 180, 180)
             }
 
-            for (y in 0..200 step 2) {
-                for (x in 0..200 step 2) {
-                    val k = x/8f - 12f
-                    val e = y/8f - 12f
-                    val mag = sqrt(k*k + e*e)
-                    val o = 2 - mag/3
-                    val d = -5 * abs(sin(k/2)*cos(e*.8f))
+            for (i in 0..360 step 2) {
+                val angle = i * PI.toFloat() / 180
+                val radius = 100 + 50 * sin(time + i / 30f)
 
-                    val px = (x-d*k*4+d*k*sin(d+time))*.7f+k*o*2+130
-                    val py = (y-d*y/5+d*e*cos(d+time+o)*sin(time+d))*.7f+e*o+70
+                for (j in 0..20) {
+                    val r = radius + j * 5 * sin(time / 2 + i / 50f)
+                    val turbulence = 20 * sin(time * 2 + i / 20f)
 
-                    canvas.drawPoint(
-                        px * width / 200f,
-                        py * height / 200f,
-                        paint
-                    )
+                    val x = centerX + r * cos(angle + time / 2) + turbulence * sin(time + i)
+                    val y = centerY + r * sin(angle + time / 2) + turbulence * cos(time + i)
+
+                    paint.alpha = (15 - j/2).coerceIn(5, 15)
+                    canvas.drawPoint(x, y, paint)
                 }
             }
         }
 
-        private fun drawPattern2(canvas: Canvas) {
+        private fun drawNebula(canvas: Canvas) {
             val width = canvas.width.toFloat()
             val height = canvas.height.toFloat()
+            val centerX = width / 2
+            val centerY = height / 2
 
-            // Adjusted paint for second pattern
             paint.apply {
-                alpha = 100  // Much higher alpha for better visibility
-                strokeWidth = 2f  // Thicker points
-                color = Color.rgb(255, 255, 255)  // Pure white
+                alpha = 20
+                strokeWidth = 4f
+                color = Color.rgb(160, 160, 180)
             }
 
-            // Center offset adjustments
-            val centerOffsetX = width / 2
-            val centerOffsetY = height / 2
+            for (i in 0..3000 step 3) {
+                val theta = i * 0.1f
+                val spiral = theta / 30f
+                val wave = sin(theta / 10f + time * 2)
 
-            for (i in 0..40000 step 40) {  // Adjusted step for better density
-                val x = i % 400
-                val y = i / 400
+                val r = spiral * 20 * wave
+                val x = centerX + r * cos(theta + time)
+                val y = centerY + r * sin(theta + time) * 0.6f
 
-                val k = x/16f - 12.5f
-                val d = -5 * abs(sin(k/3)*sin(y/24f))
-                val q = x/4f - y/3f + 60f + (sin(time) + d*3 + 3)*k*sin(d*3 + time + sin(d))
-                val c = d/2 + time/8
+                paint.alpha = (20 * abs(wave)).toInt().coerceIn(5, 20)
+                paint.strokeWidth = 2f + 2f * abs(wave)
 
-                // Enhanced scaling and centering
-                val px = (q * 0.9f * cos(c) + 200) * (width / 400f)
-                val py = ((q + y/2f - d*19) * 0.9f * sin(c) + 200) * (height / 400f)
-
-                // Additional visual enhancement - vary point size based on position
-                paint.strokeWidth = 2f + abs(sin(c)) * 2f
-
-                canvas.drawPoint(px, py, paint)
+                canvas.drawPoint(x, y, paint)
             }
         }
 
-        private fun drawPattern3(canvas: Canvas) {
+        private fun drawAuroraWaves(canvas: Canvas) {
             val width = canvas.width.toFloat()
             val height = canvas.height.toFloat()
+            val centerX = width / 2
+            val centerY = height / 2
 
             paint.apply {
-                alpha = 150
-                strokeWidth = 2.5f
-                color = Color.WHITE
-            }
-
-            for (i in 0..40000 step 40) {
-                val x = i % 200
-                val y = i / 200
-
-                val k = x/8f - 12.5f
-                val e = y/8f - 12f
-                val mag = sqrt(k*k + e*e)
-                val o = 3 - mag/3
-                val d = -4 * (sin(k/2) * cos(e))
-
-                val px = (x + e * cos(time) + d * k * sin(d + time)) * 0.7f + k * o + 130
-                val py = (y - d * 19 + d * e * cos(d + time)) * 0.7f + 130
-
-                canvas.drawPoint(
-                    px * width / 200f,
-                    py * height / 200f,
-                    paint
-                )
-            }
-        }
-
-        private fun drawPattern4(canvas: Canvas) {
-            val width = canvas.width.toFloat()
-            val height = canvas.height.toFloat()
-
-            paint.apply {
-                alpha = 160
+                alpha = 15
                 strokeWidth = 3f
-                color = Color.WHITE
+                color = Color.rgb(170, 170, 170)
             }
 
-            for (i in 0..40000 step 35) {
-                val x = i % 200
-                val y = i / 200
+            for (x in -100..100 step 2) {
+                for (y in -100..100 step 4) {
+                    val distortion = sin(x / 20f + time) * cos(y / 20f + time)
+                    val wave = sin(y / 15f + time * 2) * 50
 
-                val k = x/8f - 12f
-                val e = y/8f - 12f
-                val mag = sqrt(k*k + e*e)
-                val o = 2 - mag/3
-                val d = -5 * abs(sin(k/2) * cos(e * 0.8f))
+                    val px = centerX + x * 3 + wave * distortion
+                    val py = centerY + y * 2 + 20 * sin(x / 30f + time * 3)
 
-                val px = (x - d * k * 4 + d * k * sin(d + time)) * 0.7f + k * o * 2 + 130
-                val py = (y - d * y/5 + d * e * cos(d + time + o) * sin(time + d)) * 0.7f + e * o + 70
-
-                canvas.drawPoint(
-                    px * width / 200f,
-                    py * height / 200f,
-                    paint
-                )
+                    paint.alpha = (15 * abs(distortion)).toInt().coerceIn(5, 15)
+                    canvas.drawPoint(px, py, paint)
+                }
             }
         }
 
-        private fun drawPattern5(canvas: Canvas) {
+        private fun drawCosmicFlow(canvas: Canvas) {
             val width = canvas.width.toFloat()
             val height = canvas.height.toFloat()
+            val centerX = width / 2
+            val centerY = height / 2
 
             paint.apply {
-                alpha = 180
-                strokeWidth = 2.8f
-                color = Color.WHITE
+                alpha = 18
+                strokeWidth = 3.5f
+                color = Color.rgb(165, 165, 165)
             }
 
-            for (i in 0..40000 step 30) {
-                val x = i % 200
-                val y = i / 200
+            for (i in 0..2000 step 2) {
+                val angle = i * 0.03f
+                val radius = 150 * sin(angle / 10f + time)
 
-                val k = x/8f - 12.5f
-                val e = y/8f - 12.5f
-                val mag = sqrt(k*k + e*e)
-                val o = mag * mag / 169f
-                val d = 0.5f + 5 * cos(o)
+                val turbulence = 30 * cos(angle * 2 + time * 3)
+                val flow = 20 * sin(angle / 2 + time * 2)
 
-                val sinColor = Math.pow((d * sin(k) * sin(time * 4 + e)).toDouble(), 2.0).toFloat()
-                paint.alpha = (sinColor * 255).toInt().coerceIn(36, 255)
+                val x = centerX + radius * cos(angle + time) + turbulence
+                val y = centerY + radius * sin(angle + time) * 0.7f + flow
 
-                val px = x + d * k * sin(d * 2 + o + time) + e * cos(e + time) + 100
-                val py = o * 135 - y/4f - d * 6 * cos(d * 3 + o * 9 + time) + 125
+                paint.alpha = (18 * abs(sin(angle + time))).toInt().coerceIn(5, 18)
+                canvas.drawPoint(x, y, paint)
+            }
+        }
 
-                canvas.drawPoint(
-                    px * width / 200f,
-                    py * height / 200f,
-                    paint
-                )
+        private fun drawEtherealMist(canvas: Canvas) {
+            val width = canvas.width.toFloat()
+            val height = canvas.height.toFloat()
+            val centerX = width / 2
+            val centerY = height / 2
+
+            paint.apply {
+                alpha = 12
+                strokeWidth = 4f
+                color = Color.rgb(175, 175, 175)
+            }
+
+            for (i in 0..1800 step 3) {
+                val theta = i * 0.1f
+                val baseRadius = 100 + 50 * sin(theta / 20f + time)
+
+                for (j in 0..3) {
+                    val radius = baseRadius + j * 20 * sin(time + theta / 10f)
+                    val drift = 15 * cos(theta + time * 2 + j)
+
+                    val x = centerX + radius * cos(theta + time + j / 2f) + drift
+                    val y = centerY + radius * sin(theta + time + j / 2f) * 0.8f
+
+                    paint.alpha = (12 - j * 2).coerceIn(5, 12)
+                    canvas.drawPoint(x, y, paint)
+                }
             }
         }
 
