@@ -29,7 +29,7 @@ class LiveWallpaperService : WallpaperService() {
         private val paint = Paint().apply {
             color = Color.rgb(180, 180, 180)
             alpha = 25
-            strokeWidth = 3f
+            strokeWidth = 4f  // Increased stroke width for zoomed view
             style = Paint.Style.STROKE
             isAntiAlias = true
         }
@@ -78,17 +78,17 @@ class LiveWallpaperService : WallpaperService() {
 
             paint.apply {
                 alpha = 15
-                strokeWidth = 3f
+                strokeWidth = 4f
                 color = Color.rgb(180, 180, 180)
             }
 
             for (i in 0..360 step 2) {
                 val angle = i * PI.toFloat() / 180
-                val radius = 100 + 50 * sin(time + i / 30f)
+                val radius = 200 + 100 * sin(time + i / 30f)  // Increased radius
 
-                for (j in 0..20) {
-                    val r = radius + j * 5 * sin(time / 2 + i / 50f)
-                    val turbulence = 20 * sin(time * 2 + i / 20f)
+                for (j in 0..15) {  // Reduced iterations for more focused effect
+                    val r = radius + j * 8 * sin(time / 2 + i / 50f)  // Increased spacing
+                    val turbulence = 30 * sin(time * 2 + i / 20f)  // Increased turbulence
 
                     val x = centerX + r * cos(angle + time / 2) + turbulence * sin(time + i)
                     val y = centerY + r * sin(angle + time / 2) + turbulence * cos(time + i)
@@ -107,21 +107,21 @@ class LiveWallpaperService : WallpaperService() {
 
             paint.apply {
                 alpha = 20
-                strokeWidth = 4f
+                strokeWidth = 5f  // Increased for visibility
                 color = Color.rgb(160, 160, 180)
             }
 
-            for (i in 0..3000 step 3) {
+            for (i in 0..2000 step 3) {  // Reduced range for closer view
                 val theta = i * 0.1f
-                val spiral = theta / 30f
+                val spiral = theta / 20f  // Reduced divisor for tighter spiral
                 val wave = sin(theta / 10f + time * 2)
 
-                val r = spiral * 20 * wave
+                val r = spiral * 30 * wave  // Increased multiplication factor
                 val x = centerX + r * cos(theta + time)
                 val y = centerY + r * sin(theta + time) * 0.6f
 
                 paint.alpha = (20 * abs(wave)).toInt().coerceIn(5, 20)
-                paint.strokeWidth = 2f + 2f * abs(wave)
+                paint.strokeWidth = 3f + 3f * abs(wave)  // Increased stroke variation
 
                 canvas.drawPoint(x, y, paint)
             }
@@ -134,20 +134,29 @@ class LiveWallpaperService : WallpaperService() {
             val centerY = height / 2
 
             paint.apply {
-                alpha = 15
-                strokeWidth = 3f
-                color = Color.rgb(170, 170, 170)
+                alpha = 30  // Increased visibility
+                strokeWidth = 4.5f
+                color = Color.rgb(190, 190, 190)  // Lighter color
             }
 
-            for (x in -100..100 step 2) {
-                for (y in -100..100 step 4) {
-                    val distortion = sin(x / 20f + time) * cos(y / 20f + time)
-                    val wave = sin(y / 15f + time * 2) * 50
+            // Create full screen flowing waves
+            for (x in -120..120 step 3) {  // Increased range
+                for (y in -120..120 step 3) {  // More density
+                    val distanceFromCenter = sqrt((x * x + y * y).toDouble()) / 120f
+                    val wavePhase = distanceFromCenter * 2 + time
 
-                    val px = centerX + x * 3 + wave * distortion
-                    val py = centerY + y * 2 + 20 * sin(x / 30f + time * 3)
+                    // Create multiple overlapping wave patterns
+                    val wave1 = sin(x / 20f + time * 1.5f + y / 30f) * 100
+                    val wave2 = cos(y / 25f + time * 2f + x / 40f) * 80
+                    val wave3 = sin((x + y) / 40f + time) * 60
 
-                    paint.alpha = (15 * abs(distortion)).toInt().coerceIn(5, 15)
+                    val combinedWave = wave1 + wave2 + wave3
+
+                    val px = centerX + x * 6 + combinedWave * 0.5f
+                    val py = centerY + y * 6 + combinedWave * 0.3f
+
+                    // Vary opacity based on position and time
+                    paint.alpha = (30 * (0.5 + 0.5 * sin(wavePhase))).toInt().coerceIn(15, 30)
                     canvas.drawPoint(px, py, paint)
                 }
             }
@@ -160,23 +169,30 @@ class LiveWallpaperService : WallpaperService() {
             val centerY = height / 2
 
             paint.apply {
-                alpha = 18
-                strokeWidth = 3.5f
-                color = Color.rgb(165, 165, 165)
+                alpha = 35  // Increased visibility
+                strokeWidth = 5f
+                color = Color.rgb(200, 200, 200)  // Lighter color
             }
 
-            for (i in 0..2000 step 2) {
-                val angle = i * 0.03f
-                val radius = 150 * sin(angle / 10f + time)
+            // Create expanding spiral arms that fill the screen
+            for (i in 0..2400 step 2) {  // More points for fuller coverage
+                val angle = i * 0.05f
+                val baseRadius = width * 0.8f  // Use screen width to scale
 
-                val turbulence = 30 * cos(angle * 2 + time * 3)
-                val flow = 20 * sin(angle / 2 + time * 2)
+                // Create multiple spiral arms
+                for (arm in 0..3) {
+                    val armOffset = arm * PI.toFloat() / 2
+                    val radius = (baseRadius * (0.2 + 0.8 * abs(sin(angle / 8f + time + armOffset))))
 
-                val x = centerX + radius * cos(angle + time) + turbulence
-                val y = centerY + radius * sin(angle + time) * 0.7f + flow
+                    val turbulence = 60 * sin(angle / 4f + time * 2 + arm)
+                    val flow = 50 * cos(angle / 3f + time * 1.5f + arm)
 
-                paint.alpha = (18 * abs(sin(angle + time))).toInt().coerceIn(5, 18)
-                canvas.drawPoint(x, y, paint)
+                    val x = centerX + radius * cos(angle + time + armOffset) + turbulence
+                    val y = centerY + radius * sin(angle + time + armOffset) * 0.8f + flow
+
+                    paint.alpha = (35 * abs(sin(angle / 2 + time))).toInt().coerceIn(20, 35)
+                    canvas.drawPoint(x.toFloat(), y.toFloat(), paint)
+                }
             }
         }
 
@@ -187,24 +203,31 @@ class LiveWallpaperService : WallpaperService() {
             val centerY = height / 2
 
             paint.apply {
-                alpha = 12
-                strokeWidth = 4f
-                color = Color.rgb(175, 175, 175)
+                alpha = 25  // Increased base visibility
+                strokeWidth = 5f
+                color = Color.rgb(195, 195, 195)  // Lighter color
             }
 
-            for (i in 0..1800 step 3) {
-                val theta = i * 0.1f
-                val baseRadius = 100 + 50 * sin(theta / 20f + time)
+            // Create a full-screen ethereal mist effect
+            for (layer in 0..4) {  // Multiple layers for depth
+                val layerOffset = layer * PI.toFloat() / 2
 
-                for (j in 0..3) {
-                    val radius = baseRadius + j * 20 * sin(time + theta / 10f)
-                    val drift = 15 * cos(theta + time * 2 + j)
+                for (i in 0..1800 step 2) {
+                    val theta = i * 0.1f
+                    val baseRadius = width * 0.6f * (0.4 + 0.6 * abs(sin(theta / 30f + time + layer)))
 
-                    val x = centerX + radius * cos(theta + time + j / 2f) + drift
-                    val y = centerY + radius * sin(theta + time + j / 2f) * 0.8f
+                    // Create swirling patterns
+                    val swirl = 40 * sin(theta / 20f + time * (1 + layer * 0.2f))
+                    val drift = 80 * cos(theta / 15f + time * 1.5f + layerOffset)
 
-                    paint.alpha = (12 - j * 2).coerceIn(5, 12)
-                    canvas.drawPoint(x, y, paint)
+                    val x = centerX + baseRadius * cos(theta + time * 0.5f + layerOffset) + drift
+                    val y = centerY + baseRadius * sin(theta + time * 0.7f + layerOffset) * 0.9f + swirl
+
+                    // Vary opacity based on position and layer
+                    paint.alpha = (25 - layer * 3).coerceIn(15, 25)
+                    paint.strokeWidth = 5f - layer * 0.5f
+
+                    canvas.drawPoint(x.toFloat(), y.toFloat(), paint)
                 }
             }
         }
